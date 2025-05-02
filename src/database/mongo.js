@@ -2,9 +2,6 @@ const mongoose = require('mongoose');
 const config = require('../../config/default');
 const logger = require('../utils/logger');
 const { StockList } = require('./models/list');
-const { DayLine } = require('./models/dayLine');
-const { dayMetric } = require('./models/metric');
-const { Signal } = require('./models/signal');
 
 /**
  * MongoDB 数据库连接和基础操作类
