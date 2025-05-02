@@ -1,112 +1,102 @@
-/**
- * MongoDB连接和基础操作模块
- * 负责数据库连接管理和基础CRUD操作
- */
+const mongoose = require('mongoose');
+const config = require('../../config/default');
+const logger = require('../utils/logger');
 
 /**
- * 初始化数据库连接
- * @param {Object} config - 数据库配置信息
- * @param {string} config.host - 数据库主机地址
- * @param {number} config.port - 数据库端口
- * @param {string} config.database - 数据库名称
- * @param {string} config.username - 用户名
- * @param {string} config.password - 密码
- * @returns {Promise<void>} 连接完成的Promise
+ * MongoDB 数据库连接和基础操作类
  */
-async function connect(config) {
+class MongoDB {
+    /**
+     * 连接数据库
+     * @returns {Promise} 连接成功的Promise
+     */
+    static async connect() {
+        try {
+            await mongoose.connect(config.mongodb.uri, config.mongodb.options);
+            logger.info('MongoDB connected successfully');
+        } catch (error) {
+            logger.error('MongoDB connection error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * 获取股票列表
+     * @returns {Promise<Array>} 股票列表数据
+     */
+    static async getList() {
+        // TODO: 实现获取股票列表的逻辑
+    }
+
+    /**
+     * 获取日线数据
+     * @param {string} code - 股票代码
+     * @param {string} startDate - 开始日期
+     * @param {string} endDate - 结束日期
+     * @returns {Promise<Array>} 日线数据
+     */
+    static async getDayLine(code, startDate, endDate) {
+        // TODO: 实现获取日线数据的逻辑
+    }
+
+    /**
+     * 获取技术指标数据
+     * @param {string} code - 股票代码
+     * @param {string} startDate - 开始日期
+     * @returns {Promise<Array>} 指标数据
+     */
+    static async getMetric(code, startDate) {
+        // TODO: 实现获取技术指标数据的逻辑
+    }
+
+    /**
+     * 获取交易信号
+     * @param {string} code - 股票代码
+     * @param {string} startDate - 开始日期
+     * @returns {Promise<Array>} 交易信号数据
+     */
+    static async getSignal(code, startDate) {
+        // TODO: 实现获取交易信号数据的逻辑
+    }
+
+    /**
+     * 保存股票列表
+     * @param {Array} data - 股票列表数据
+     * @returns {Promise} 保存结果
+     */
+    static async saveList(data) {
+        // TODO: 实现保存股票列表的逻辑
+    }
+
+    /**
+     * 保存日线数据
+     * @param {string} code - 股票代码
+     * @param {Array} data - 日线数据
+     * @returns {Promise} 保存结果
+     */
+    static async saveDayLine(code, data) {
+        // TODO: 实现保存日线数据的逻辑
+    }
+
+    /**
+     * 保存技术指标数据
+     * @param {string} code - 股票代码
+     * @param {Array} data - 指标数据
+     * @returns {Promise} 保存结果
+     */
+    static async saveMetric(code, data) {
+        // TODO: 实现保存技术指标数据的逻辑
+    }
+
+    /**
+     * 保存交易信号
+     * @param {string} code - 股票代码
+     * @param {Array} data - 信号数据
+     * @returns {Promise} 保存结果
+     */
+    static async saveSignal(code, data) {
+        // TODO: 实现保存交易信号数据的逻辑
+    }
 }
 
-/**
- * 关闭数据库连接
- * @returns {Promise<void>} 关闭完成的Promise
- */
-async function disconnect() {
-}
-
-/**
- * 插入单个文档
- * @param {string} collection - 集合名称
- * @param {Object} document - 要插入的文档
- * @returns {Promise<Object>} 插入的文档
- */
-async function insertOne(collection, document) {
-}
-
-/**
- * 插入多个文档
- * @param {string} collection - 集合名称
- * @param {Array<Object>} documents - 要插入的文档数组
- * @returns {Promise<Array<Object>>} 插入的文档数组
- */
-async function insertMany(collection, documents) {
-}
-
-/**
- * 查找单个文档
- * @param {string} collection - 集合名称
- * @param {Object} query - 查询条件
- * @returns {Promise<Object>} 查询结果文档
- */
-async function findOne(collection, query) {
-}
-
-/**
- * 查找多个文档
- * @param {string} collection - 集合名称
- * @param {Object} query - 查询条件
- * @param {Object} options - 查询选项（排序、限制等）
- * @returns {Promise<Array<Object>>} 查询结果文档数组
- */
-async function find(collection, query, options) {
-}
-
-/**
- * 更新单个文档
- * @param {string} collection - 集合名称
- * @param {Object} query - 查询条件
- * @param {Object} update - 更新内容
- * @returns {Promise<Object>} 更新结果
- */
-async function updateOne(collection, query, update) {
-}
-
-/**
- * 更新多个文档
- * @param {string} collection - 集合名称
- * @param {Object} query - 查询条件
- * @param {Object} update - 更新内容
- * @returns {Promise<Object>} 更新结果
- */
-async function updateMany(collection, query, update) {
-}
-
-/**
- * 删除单个文档
- * @param {string} collection - 集合名称
- * @param {Object} query - 查询条件
- * @returns {Promise<Object>} 删除结果
- */
-async function deleteOne(collection, query) {
-}
-
-/**
- * 删除多个文档
- * @param {string} collection - 集合名称
- * @param {Object} query - 查询条件
- * @returns {Promise<Object>} 删除结果
- */
-async function deleteMany(collection, query) {
-}
-
-module.exports = {
-    connect,
-    disconnect,
-    insertOne,
-    insertMany,
-    findOne,
-    find,
-    updateOne,
-    updateMany,
-    deleteOne,
-    deleteMany
-};
+module.exports = MongoDB;
