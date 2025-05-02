@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const config = require('../../config/default');
 const logger = require('../utils/logger');
+const { StockList } = require('./models/list');
+const { DayLine } = require('./models/dayLine');
+const { dayMetric } = require('./models/metric');
+const { Signal } = require('./models/signal');
 
 /**
  * MongoDB 数据库连接和基础操作类
@@ -21,11 +25,39 @@ class MongoDB {
     }
 
     /**
-     * 获取股票列表
-     * @returns {Promise<Array>} 股票列表数据
+     * 获取股票列表（不包含历史数据）
+     * @returns {Promise<Array>} 股票列表基本数据
      */
     static async getList() {
-        // TODO: 实现获取股票列表的逻辑
+        try {
+            const list = await StockList.find({}, {
+                dayLine: 0,
+                dayMetric: 0,
+                signal: 0
+            });
+            return list;
+        } catch (error) {
+            logger.error('获取股票列表失败:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * 获取单个股票的完整信息
+     * @param {string} code - 股票代码
+     * @returns {Promise<Object>} 股票完整信息
+     */
+    static async getStock(code) {
+        try {
+            const stock = await StockList.findOne({ code });
+            if (!stock) {
+                throw new Error(`股票代码 ${code} 不存在`);
+            }
+            return stock;
+        } catch (error) {
+            logger.error('获取股票信息失败:', error);
+            throw error;
+        }
     }
 
     /**
@@ -36,27 +68,63 @@ class MongoDB {
      * @returns {Promise<Array>} 日线数据
      */
     static async getDayLine(code, startDate, endDate) {
-        // TODO: 实现获取日线数据的逻辑
+        try {
+            const stock = await StockList.findOne({ code });
+            if (!stock) {
+                throw new Error(`股票代码 ${code} 不存在`);
+            }
+            
+            const dayLines = stock.dayLine.filter(day => 
+                day.date >= startDate && day.date <= endDate
+            );
+            return dayLines;
+        } catch (error) {
+            logger.error('获取日线数据失败:', error);
+            throw error;
+        }
     }
 
     /**
      * 获取技术指标数据
      * @param {string} code - 股票代码
      * @param {string} startDate - 开始日期
+     * @param {string} endDate - 结束日期
      * @returns {Promise<Array>} 指标数据
      */
-    static async getMetric(code, startDate) {
-        // TODO: 实现获取技术指标数据的逻辑
+    static async getMetric(code, startDate, endDate) {
+        try {
+            const stock = await StockList.findOne({ code });
+            if (!stock) {
+                throw new Error(`股票代码 ${code} 不存在`);
+            }
+            
+            const metrics = stock.dayMetric.filter(metric =>
+                metric.date >= startDate && metric.date <= endDate
+            );
+            return metrics;
+        } catch (error) {
+            logger.error('获取技术指标数据失败:', error);
+            throw error;
+        }
     }
 
     /**
      * 获取交易信号
      * @param {string} code - 股票代码
-     * @param {string} startDate - 开始日期
      * @returns {Promise<Array>} 交易信号数据
      */
-    static async getSignal(code, startDate) {
-        // TODO: 实现获取交易信号数据的逻辑
+    static async getSignal(code) {
+        try {
+            const stock = await StockList.findOne({ code });
+            if (!stock) {
+                throw new Error(`股票代码 ${code} 不存在`);
+            }
+            
+            return stock.signal;
+        } catch (error) {
+            logger.error('获取交易信号失败:', error);
+            throw error;
+        }
     }
 
     /**
@@ -65,7 +133,13 @@ class MongoDB {
      * @returns {Promise} 保存结果
      */
     static async saveList(data) {
-        // TODO: 实现保存股票列表的逻辑
+        try {
+            const result = await StockList.insertMany(data, { ordered: false });
+            return result;
+        } catch (error) {
+            logger.error('保存股票列表失败:', error);
+            throw error;
+        }
     }
 
     /**
@@ -75,7 +149,16 @@ class MongoDB {
      * @returns {Promise} 保存结果
      */
     static async saveDayLine(code, data) {
-        // TODO: 实现保存日线数据的逻辑
+        try {
+            const result = await StockList.updateOne(
+                { code },
+                { $push: { dayLine: { $each: data } } }
+            );
+            return result;
+        } catch (error) {
+            logger.error('保存日线数据失败:', error);
+            throw error;
+        }
     }
 
     /**
@@ -85,7 +168,16 @@ class MongoDB {
      * @returns {Promise} 保存结果
      */
     static async saveMetric(code, data) {
-        // TODO: 实现保存技术指标数据的逻辑
+        try {
+            const result = await StockList.updateOne(
+                { code },
+                { $push: { dayMetric: { $each: data } } }
+            );
+            return result;
+        } catch (error) {
+            logger.error('保存技术指标数据失败:', error);
+            throw error;
+        }
     }
 
     /**
@@ -95,7 +187,70 @@ class MongoDB {
      * @returns {Promise} 保存结果
      */
     static async saveSignal(code, data) {
-        // TODO: 实现保存交易信号数据的逻辑
+        try {
+            const result = await StockList.updateOne(
+                { code },
+                { $push: { signal: { $each: data } } }
+            );
+            return result;
+        } catch (error) {
+            logger.error('保存交易信号失败:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * 清空日线数据
+     * @param {string} code - 股票代码
+     * @returns {Promise} 清空结果
+     */
+    static async clearDayLine(code) {
+        try {
+            const result = await StockList.updateOne(
+                { code },
+                { $set: { dayLine: [] } }
+            );
+            return result;
+        } catch (error) {
+            logger.error('清空日线数据失败:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * 清空技术指标数据
+     * @param {string} code - 股票代码
+     * @returns {Promise} 清空结果
+     */
+    static async clearMetric(code) {
+        try {
+            const result = await StockList.updateOne(
+                { code },
+                { $set: { dayMetric: [] } }
+            );
+            return result;
+        } catch (error) {
+            logger.error('清空技术指标数据失败:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * 清空交易信号数据
+     * @param {string} code - 股票代码
+     * @returns {Promise} 清空结果
+     */
+    static async clearSignal(code) {
+        try {
+            const result = await StockList.updateOne(
+                { code },
+                { $set: { signal: [] } }
+            );
+            return result;
+        } catch (error) {
+            logger.error('清空交易信号数据失败:', error);
+            throw error;
+        }
     }
 }
 
