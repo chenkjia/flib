@@ -9,18 +9,14 @@ const config = require('../../config/api');
  */
 
 /**
- * 获取单页加密货币列表数据
- * @param {number} page - 页码，从1开始
- * @param {number} limit - 每页数量，最大100
+ * 获取加密货币列表数据
  * @returns {Promise<Array>} 加密货币列表数据
  */
-async function fetchListPage(page = 1, limit = 100) {
+async function fetchListPage() {
     try {
-        const url = `${config.baseURL}${config.endpoints.toplist}`;
+        const url = `${config.baseURL}${config.endpoints.allcoins}`;
         const params = {
-            page,
-            limit,
-            tsym: 'USD'  // 以美元为计价单位
+            summary: true,  // 获取完整信息
         };
         
         const headers = {
@@ -43,20 +39,19 @@ async function fetchListPage(page = 1, limit = 100) {
             throw new Error('API 响应数据格式错误');
         }
 
-        const mappedData = response.data.Data.map(item => ({
-            code: item.CoinInfo.Name,
-            name: item.CoinInfo.FullName,
-            symbol: item.CoinInfo.Name,
-            market: '加密货币',
+        const mappedData = Object.values(response.data.Data).map(item => ({
+            code: item.Symbol,
+            name: item.FullName,
+            market: 'crypto',
             dayLine: [],
             dayMetric: [],
             signal: []
         }));
 
-        logger.info(`成功获取第 ${page} 页数据，共 ${mappedData.length} 条记录`);
+        logger.info(`成功获取加密货币列表数据，共 ${mappedData.length} 条记录`);
         return mappedData;
     } catch (error) {
-        logger.error(`获取第${page}页加密货币列表失败:`, error);
+        logger.error('获取加密货币列表失败:', error);
         logger.error('错误详情:', error.response ? error.response.data : '无响应数据');
         throw error;
     }
@@ -68,25 +63,8 @@ async function fetchListPage(page = 1, limit = 100) {
  */
 async function fetchList() {
     try {
-        const limit = 100; // API限制每页最大100条
-        let page = 1;
-        let allData = [];
-        let hasMore = true;
-
-        while (hasMore) {
-            const pageData = await fetchListPage(page, limit);
-            
-            if (pageData.length === 0) {
-                hasMore = false;
-            } else {
-                allData = allData.concat(pageData);
-                page++;
-                
-                // 添加延迟以避免API限制
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-        }
-
+        const allData = await fetchListPage();
+        
         // 保存到数据库
         if (allData.length > 0) {
             await MongoDB.saveList(allData);

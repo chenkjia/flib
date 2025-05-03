@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const stockListSchema = new mongoose.Schema({
     code: { type: String, required: true, unique: true },
     name: { type: String, required: true },
-    symbol: { type: String, required: true },
     market: { type: String, required: true },
     dayLine: [{
         date: String,

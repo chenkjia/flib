@@ -10,6 +10,7 @@ module.exports = {
         price: '/price',          // 获取实时价格的端点
         histoday: '/v2/histoday', // 获取每日历史数据的端点
         histohour: '/v2/histohour', // 获取每小时历史数据的端点
-        toplist: '/top/totalvolfull'  // 获取市值排行榜的端点
+        toplist: '/top/totalvolfull',  // 获取市值排行榜的端点
+        allcoins: '/all/coinlist'
     }
 };
