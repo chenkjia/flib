@@ -45,6 +45,8 @@ async function fetchListPage() {
             market: 'crypto',
             dayLine: [],
             dayMetric: [],
+            hourLine: [],
+            hourMetric: [],
             signal: []
         }));
 

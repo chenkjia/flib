@@ -58,6 +58,29 @@ class MongoDB {
     }
 
     /**
+     * 获取单个股票的最后一条日线数据
+     * @param {string} code - 股票代码
+     * @returns {Promise<Object>} 最后一条日线数据
+     */
+    static async getLastDayLine(code) {
+        try {
+            const result = await StockList.findOne(
+                { code },
+                { dayLine: { $slice: -1 } }
+            );
+            
+            if (!result) {
+                throw new Error(`股票代码 ${code} 不存在`);
+            }
+
+            return result.dayLine[0] || null;
+        } catch (error) {
+            logger.error('获取最后一条日线数据失败:', error);
+            throw error;
+        }
+    }
+
+    /**
      * 获取日线数据
      * @param {string} code - 股票代码
      * @param {string} startDate - 开始日期
@@ -246,6 +269,71 @@ class MongoDB {
             return result;
         } catch (error) {
             logger.error('清空交易信号数据失败:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * 获取单个股票的最后一条小时线数据
+     * @param {string} code - 股票代码
+     * @returns {Promise<Object>} 最后一条小时线数据
+     */
+    static async getLastHourLine(code) {
+        try {
+            const result = await StockList.findOne(
+                { code },
+                { hourLine: { $slice: -1 } }
+            );
+            
+            if (!result) {
+                throw new Error(`股票代码 ${code} 不存在`);
+            }
+
+            return result.hourLine[0] || null;
+        } catch (error) {
+            logger.error('获取最后一条小时线数据失败:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * 保存小时线数据
+     * @param {string} code - 股票代码
+     * @param {Array} data - 小时线数据
+     * @returns {Promise} 保存结果
+     */
+    static async saveHourLine(code, data) {
+        try {
+            const result = await StockList.updateOne(
+                { code },
+                { $push: { hourLine: { $each: data } } }
+            );
+            return result;
+        } catch (error) {
+            logger.error('保存小时线数据失败:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * 获取单个股票的第一条日线数据
+     * @param {string} code - 股票代码
+     * @returns {Promise<Object>} 第一条日线数据
+     */
+    static async getFirstDayLine(code) {
+        try {
+            const result = await StockList.findOne(
+                { code },
+                { dayLine: { $slice: 1 } }
+            );
+            
+            if (!result) {
+                throw new Error(`股票代码 ${code} 不存在`);
+            }
+
+            return result.dayLine[0] || null;
+        } catch (error) {
+            logger.error('获取第一条日线数据失败:', error);
             throw error;
         }
     }
