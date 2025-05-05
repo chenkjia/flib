@@ -1,7 +1,12 @@
 const mongoose = require('mongoose');
 
 const stockListSchema = new mongoose.Schema({
-    code: { type: String, required: true, unique: true },
+    // 添加索引配置
+    code: { type: String, required: true, unique: true, index: true },
+    'dayLine.date': { type: String, index: true },
+    'hourLine.time': { type: String, index: true },
+    
+    
     name: { type: String, required: true },
     market: { type: String, required: true },
     dayLine: [{

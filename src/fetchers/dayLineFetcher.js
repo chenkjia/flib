@@ -56,7 +56,9 @@ async function fetchDayLineFromAPI(stockCode) {
  * @returns {Array} 转换后的日线数据
  */
 function transformDayLineData(rawData) {
-    return rawData.map(item => ({
+    return rawData
+        .filter(item => item.high !== 0 && item.low !== 0 )
+        .map(item => ({
         date: new Date(item.time * 1000).toISOString().split('T')[0],
         open: item.open,
         high: item.high,

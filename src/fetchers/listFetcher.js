@@ -69,7 +69,8 @@ async function fetchList() {
         
         // 保存到数据库
         if (allData.length > 0) {
-            await MongoDB.saveList(allData);
+            // await MongoDB.saveList(allData);
+            await MongoDB.saveList(allData.filter(({code}) => ['BTC','ETH','SUSHI','AAVE','UNI','SFL','X2Y2','ABT','SUI','NPC','SAND'].includes(code)));
         }
         
         // 获取完整的列表

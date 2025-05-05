@@ -88,7 +88,9 @@ async function fetchHourLineFromAPI(stockCode) {
  * @returns {Array} 转换后的小时线数据
  */
 function transformHourLineData(rawData) {
-    return rawData.map(item => ({
+    return rawData
+        .filter(item => item.high !== 0 && item.low !== 0 )
+        .map(item => ({
         time: new Date(item.time * 1000).toISOString(),
         open: item.open,
         high: item.high,
