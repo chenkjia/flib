@@ -1,7 +1,7 @@
 module.exports = {
   // MongoDB配置
   mongodb: {
-    uri: 'mongodb://localhost:27017/flib/?maxBsonObjectSize=3221225472',
+    uri: 'mongodb://localhost:27017/flib',
     options: {
       useNewUrlParser: true,
       useUnifiedTopology: true
