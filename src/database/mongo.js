@@ -87,17 +87,20 @@ class MongoDB {
      * @param {string} endDate - 结束日期
      * @returns {Promise<Array>} 日线数据
      */
-    static async getDayLine(code, startDate, endDate) {
+    static async getDayLine(code, startDate = null, endDate = null) {
         try {
             const stock = await StockList.findOne({ code });
             if (!stock) {
                 throw new Error(`股票代码 ${code} 不存在`);
             }
             
-            const dayLines = stock.dayLine.filter(day => 
-                day.date >= startDate && day.date <= endDate
-            );
-            return dayLines;
+            if (startDate && endDate) {
+                return stock.dayLine.filter(day => 
+                    day.date >= startDate && day.date <= endDate
+                );
+            }
+            
+            return stock.dayLine;
         } catch (error) {
             logger.error('获取日线数据失败:', error);
             throw error;
@@ -111,17 +114,20 @@ class MongoDB {
      * @param {string} endDate - 结束日期
      * @returns {Promise<Array>} 指标数据
      */
-    static async getMetric(code, startDate, endDate) {
+    static async getMetric(code, startDate = null, endDate = null) {
         try {
             const stock = await StockList.findOne({ code });
             if (!stock) {
                 throw new Error(`股票代码 ${code} 不存在`);
             }
             
-            const metrics = stock.dayMetric.filter(metric =>
-                metric.date >= startDate && metric.date <= endDate
-            );
-            return metrics;
+            if (startDate && endDate) {
+                return stock.dayMetric.filter(metric =>
+                    metric.date >= startDate && metric.date <= endDate
+                );
+            }
+            
+            return stock.dayMetric;
         } catch (error) {
             logger.error('获取技术指标数据失败:', error);
             throw error;

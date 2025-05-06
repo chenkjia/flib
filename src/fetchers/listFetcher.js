@@ -1,7 +1,8 @@
 const MongoDB = require('../database/mongo');
 const logger = require('../utils/logger');
 const axios = require('axios');
-const config = require('../../config/api');
+const api = require('../../config/api');
+const config = require('../../config/default');
 
 /**
  * 列表数据获取模块
@@ -14,13 +15,13 @@ const config = require('../../config/api');
  */
 async function fetchListPage() {
     try {
-        const url = `${config.baseURL}${config.endpoints.allcoins}`;
+        const url = `${api.baseURL}${api.endpoints.allcoins}`;
         const params = {
             summary: true,  // 获取完整信息
         };
         
         const headers = {
-            'authorization': `Apikey ${config.apiKey}`
+            'authorization': `Apikey ${api.apiKey}`
         };
 
         logger.info(`正在请求 API: ${url}`);
@@ -70,7 +71,7 @@ async function fetchList() {
         // 保存到数据库
         if (allData.length > 0) {
             // await MongoDB.saveList(allData);
-            await MongoDB.saveList(allData.filter(({code}) => ['BTC','ETH','SUSHI','AAVE','UNI','SFL','X2Y2','ABT','SUI','NPC','SAND'].includes(code)));
+            await MongoDB.saveList(allData.filter(({code}) => config.includes(code)));
         }
         
         // 获取完整的列表
