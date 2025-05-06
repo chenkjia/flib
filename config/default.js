@@ -1,5 +1,5 @@
 module.exports = {
-  stocks: ['ETH','SUSHI','AAVE','UNI','SFL','X2Y2','ABT','SUI','NPC','SAND'],
+  stocks: ['BTC','ETH','SUSHI','AAVE','UNI','SFL','X2Y2','ABT','SUI','NPC','SAND'],
   // MongoDB配置
   mongodb: {
     uri: 'mongodb://localhost:27017/flib',

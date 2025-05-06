@@ -92,12 +92,12 @@ function transformHourLineData(rawData) {
         .filter(item => item.high !== 0 && item.low !== 0 )
         .map(item => ({
         time: new Date(item.time * 1000).toISOString(),
-        open: item.open,
-        high: item.high,
-        low: item.low,
+        // open: item.open,
+        // high: item.high,
+        // low: item.low,
         close: item.close,
         volume: item.volumefrom,
-        amount: item.volumeto
+        // amount: item.volumeto
     }));
 }
 
